@@ -161,3 +161,8 @@ external tunnel (`ssh -R`, `frp`, `cloudflared`) by pointing `--public-url` at i
 - HTTPS trust pins the provided dev certificate via `ssl` (`cafile`). Hostname
   verification is disabled because the dev cert is CN-only (`/CN=127.0.0.1`) with
   no subjectAltName, which OpenSSL rejects for IP literals.
+
+## License
+
+Released into the public domain under [The Unlicense](LICENSE) — do whatever you
+like with it, no attribution required.
