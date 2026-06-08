@@ -1,0 +1,34 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Backend (HTTPS)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/server.py",
+      "args": ["--host", "127.0.0.1", "--port", "8443"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Run Client (wxPython)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/client/client.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "args": [
+        "https://127.0.0.1:8443",
+        "backend/certs/cert.pem"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Backend + Client",
+      "configurations": ["Debug Backend (HTTPS)", "Run Client (wxPython)"],
+      "stopAll": true
+    }
+  ]
+}

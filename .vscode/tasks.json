@@ -1,0 +1,64 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Generate Dev Certificate",
+      "type": "shell",
+      "command": "./backend/scripts/generate-dev-cert.sh",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Chat Backend",
+      "type": "shell",
+      "command": "python3",
+      "args": ["backend/server.py", "--host", "127.0.0.1", "--port", "8443"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Validate Backend Syntax",
+      "type": "shell",
+      "command": "python3",
+      "args": ["-m", "py_compile", "backend/server.py"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Peer",
+      "type": "shell",
+      "command": "python3",
+      "args": ["peer.py", "--port", "8443", "--room", "lobby"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Super-Peer",
+      "type": "shell",
+      "command": "python3",
+      "args": [
+        "peer.py", "--no-gui", "--serve-tracker", "--relay",
+        "--host", "0.0.0.0", "--port", "8443", "--room", "lobby"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}
