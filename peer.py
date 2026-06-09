@@ -15,7 +15,7 @@ gossips messages to the peers it knows about. On top of the mesh:
 - **Reachability**: the advertised address (``--public-url``) is decoupled from
   the bind address (``--host``/``--port``).
 
-``server.py`` and ``client.py`` are kept alongside, untouched; this is a separate
+``legacy/server.py`` and ``legacy/client.py`` are kept untouched; this is a separate
 JSON protocol that interoperates peer-to-peer only.
 
 Transport mirrors the rest of the repo: HTTPS with the dev certificate pinned via
@@ -57,7 +57,7 @@ def utc_now() -> str:
 
 
 # ---------------------------------------------------------------------------
-# Local-first message store (lock-guarded). Mirrors backend/server.py helpers,
+# Local-first message store (lock-guarded). Mirrors legacy/server.py helpers,
 # but ids are the composite ``origin:seq`` so they never collide across peers.
 # ---------------------------------------------------------------------------
 class Store:
@@ -584,7 +584,7 @@ class Peer:
         cert, key = Path(self.cert_path), Path(self.key_path)
         if not cert.exists() or not key.exists():
             raise SystemExit(
-                "Missing certificate files. Run backend/scripts/generate-dev-cert.sh first."
+                "Missing certificate files. Run scripts/generate-dev-cert.sh first."
             )
         httpd = ThreadingHTTPServer((self.bind_host, self.bind_port), PeerHandler)
         httpd.daemon_threads = True
@@ -805,7 +805,7 @@ def run_gui(peer: Peer, use_tray: bool) -> None:
 # ---------------------------------------------------------------------------
 def parse_args() -> argparse.Namespace:
     here = Path(__file__).resolve().parent
-    certs = here / "backend" / "certs"
+    certs = here / "certs"
     p = argparse.ArgumentParser(description="Run a wxsend full-mesh P2P chat peer.")
     p.add_argument("--host", default="127.0.0.1", help="local bind host")
     p.add_argument("--port", type=int, default=8443, help="local bind port")

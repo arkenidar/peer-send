@@ -12,9 +12,10 @@ wxPython client that the peer grew out of.
 
 - `peer.py` — main app: symmetric full-mesh P2P chat node (server + client + tray
   in one). See [Peer (mesh)](#peer-mesh).
-- `backend/server.py` — the original HTTPS chat service (optional `--gui` monitor).
-- `client/client.py` — the original wxPython client (`client.lua` is the earlier
-  wxLua version). See [Original client and server](#original-client-and-server).
+- `legacy/server.py` — the original HTTPS chat service (optional `--gui` monitor).
+- `legacy/client.py` — the original wxPython client (`legacy/client.lua` is the
+  earlier wxLua version). See [Original client and server](#original-client-and-server).
+- `certs/` — shared dev TLS cert; `scripts/generate-dev-cert.sh` regenerates it.
 
 ## Requirements
 
@@ -28,7 +29,6 @@ sudo apt install -y python3-wxgtk4.0
 Generate the local development TLS certificate once (shared by all components):
 
 ```bash
-cd backend
 ./scripts/generate-dev-cert.sh
 ```
 
@@ -123,8 +123,7 @@ from.
 Run the backend:
 
 ```bash
-cd backend
-python3 server.py --host 127.0.0.1 --port 8443
+python3 legacy/server.py --host 127.0.0.1 --port 8443
 ```
 
 Optionally open a wxPython monitor/admin window alongside the server (live
@@ -133,7 +132,7 @@ background thread while the GUI owns the main thread; closing the window stops
 the server. wxPython is imported lazily, so it is only required with `--gui`:
 
 ```bash
-python3 server.py --gui
+python3 legacy/server.py --gui
 ```
 
 Available endpoints:
@@ -148,14 +147,13 @@ The client uses only the Python standard library (`urllib` + `ssl`) for HTTPS, s
 no extra packages beyond wxPython are required. Run it after the backend is up:
 
 ```bash
-cd peer-send   # the repository root
-python3 client/client.py
+python3 legacy/client.py
 ```
 
 Optional positional arguments override the defaults:
 
 ```bash
-python3 client/client.py https://127.0.0.1:8443 backend/certs/cert.pem
+python3 legacy/client.py https://127.0.0.1:8443 certs/cert.pem
 ```
 
 ## VS Code Tasks

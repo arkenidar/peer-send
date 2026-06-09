@@ -135,13 +135,14 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the wxsend HTTPS chat backend.")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8443)
+    certs = Path(__file__).resolve().parent.parent / "certs"
     parser.add_argument(
         "--cert",
-        default=str(Path(__file__).with_name("certs") / "cert.pem"),
+        default=str(certs / "cert.pem"),
     )
     parser.add_argument(
         "--key",
-        default=str(Path(__file__).with_name("certs") / "key.pem"),
+        default=str(certs / "key.pem"),
     )
     parser.add_argument(
         "--gui",
@@ -270,7 +271,7 @@ def main() -> None:
     key_path = Path(args.key)
     if not cert_path.exists() or not key_path.exists():
         raise SystemExit(
-            "Missing certificate files. Run backend/scripts/generate-dev-cert.sh first."
+            "Missing certificate files. Run scripts/generate-dev-cert.sh first."
         )
 
     httpd = ThreadingHTTPServer((args.host, args.port), ChatHandler)

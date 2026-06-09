@@ -9,7 +9,7 @@ cert through ``cafile`` keeps the same trust model the curl-based wxLua client
 relied on.
 
 Usage:
-    python3 client/client.py [base_url] [cert_path]
+    python3 legacy/client.py [base_url] [cert_path]
 """
 import json
 import os
@@ -180,7 +180,7 @@ def main() -> None:
     script_dir = os.path.dirname(os.path.abspath(__file__))
     base_url = sys.argv[1] if len(sys.argv) > 1 else "https://127.0.0.1:8443"
     default_cert = os.path.normpath(
-        os.path.join(script_dir, "..", "backend", "certs", "cert.pem")
+        os.path.join(script_dir, "..", "certs", "cert.pem")
     )
     cert_path = sys.argv[2] if len(sys.argv) > 2 else default_cert
     author_name = os.environ.get("USER") or "guest"
