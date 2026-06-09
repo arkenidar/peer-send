@@ -1,68 +1,35 @@
-# wx-send
+# peer-send
 
-Minimal chat workspace with a wxPython desktop client and a Python HTTPS backend.
+Symmetric full-mesh peer-to-peer chat in Python + wxPython. Every instance is an
+identical **peer** that hosts its own in-memory message store and gossips to the
+peers it knows — with a system-tray presence, room-gated discovery, and a
+tracker + relay "super-peer" that lets peers behind NAT join.
+
+`peer.py` is the main program. The repo also keeps the original HTTPS server and
+wxPython client that the peer grew out of.
 
 ## Layout
 
-- `client/` desktop app: `client.py` (wxPython, current) and `client.lua` (original wxLua version).
-- `backend/` HTTPS chat service.
-- `peer.py` symmetric full-mesh P2P chat node (server + client + tray in one);
-  see [Peer (mesh)](#peer-mesh). The client/server pair above is kept as-is.
+- `peer.py` — main app: symmetric full-mesh P2P chat node (server + client + tray
+  in one). See [Peer (mesh)](#peer-mesh).
+- `backend/server.py` — the original HTTPS chat service (optional `--gui` monitor).
+- `client/client.py` — the original wxPython client (`client.lua` is the earlier
+  wxLua version). See [Original client and server](#original-client-and-server).
 
-## Backend
+## Requirements
 
-Generate a local development certificate:
-
-```bash
-cd backend
-./scripts/generate-dev-cert.sh
-```
-
-Run the backend:
-
-```bash
-cd backend
-python3 server.py --host 127.0.0.1 --port 8443
-```
-
-Optionally open a wxPython monitor/admin window alongside the server (live
-transcript + message count, plus Send/Clear controls). The server runs in a
-background thread while the GUI owns the main thread; closing the window stops
-the server. wxPython is imported lazily, so it is only required with `--gui`:
-
-```bash
-python3 server.py --gui
-```
-
-Available endpoints:
-
-- `GET /health`
-- `GET /messages?after=<id>`
-- `POST /messages`
-
-## Client
-
-The client is a wxPython app and uses only the Python standard library
-(`urllib` + `ssl`) for HTTPS, so no extra Python packages beyond wxPython are
-required.
-
-Install wxPython (Debian/Ubuntu):
+Python 3 standard library only, plus wxPython for any GUI (peers with a window,
+and the client). On Debian/Ubuntu:
 
 ```bash
 sudo apt install -y python3-wxgtk4.0
 ```
 
-Run the client after the backend is up:
+Generate the local development TLS certificate once (shared by all components):
 
 ```bash
-cd peer-send   # the repository root
-python3 client/client.py
-```
-
-Optional positional arguments override the defaults:
-
-```bash
-python3 client/client.py https://127.0.0.1:8443 backend/certs/cert.pem
+cd backend
+./scripts/generate-dev-cert.sh
 ```
 
 ## Peer (mesh)
@@ -87,8 +54,7 @@ and relay endpoints.
 
 ### Local mesh (quickstart)
 
-Generate the dev cert once (`backend/scripts/generate-dev-cert.sh`), then run a
-few peers that seed each other directly:
+Run a few peers that seed each other directly:
 
 ```bash
 python3 peer.py --port 8443 --room demo --peer https://127.0.0.1:8444
@@ -146,6 +112,52 @@ external tunnel (`ssh -R`, `frp`, `cloudflared`) by pointing `--public-url` at i
 - Ordering is best-effort wall-clock; **Clear is local-only** (anti-entropy pull
   may re-populate it from peers); full-state pull is O(N).
 
+## Original client and server
+
+The peer supersedes these, but they remain as a simpler, self-contained
+client/server pair (integer message ids, TSV polling) that the project started
+from.
+
+### Backend
+
+Run the backend:
+
+```bash
+cd backend
+python3 server.py --host 127.0.0.1 --port 8443
+```
+
+Optionally open a wxPython monitor/admin window alongside the server (live
+transcript + message count, plus Send/Clear controls). The server runs in a
+background thread while the GUI owns the main thread; closing the window stops
+the server. wxPython is imported lazily, so it is only required with `--gui`:
+
+```bash
+python3 server.py --gui
+```
+
+Available endpoints:
+
+- `GET /health`
+- `GET /messages?after=<id>`
+- `POST /messages`
+
+### Client
+
+The client uses only the Python standard library (`urllib` + `ssl`) for HTTPS, so
+no extra packages beyond wxPython are required. Run it after the backend is up:
+
+```bash
+cd peer-send   # the repository root
+python3 client/client.py
+```
+
+Optional positional arguments override the defaults:
+
+```bash
+python3 client/client.py https://127.0.0.1:8443 backend/certs/cert.pem
+```
+
 ## VS Code Tasks
 
 - `Generate Dev Certificate`
@@ -157,7 +169,7 @@ external tunnel (`ssh -R`, `frp`, `cloudflared`) by pointing `--public-url` at i
 ## Notes
 
 - TODO This is a development scaffold. Messages are stored in memory.
-- The client polls `GET /messages?format=tsv` and parses TSV directly.
+- The original client polls `GET /messages?format=tsv` and parses TSV directly.
 - HTTPS trust pins the provided dev certificate via `ssl` (`cafile`). Hostname
   verification is disabled because the dev cert is CN-only (`/CN=127.0.0.1`) with
   no subjectAltName, which OpenSSL rejects for IP literals.
