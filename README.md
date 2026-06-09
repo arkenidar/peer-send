@@ -4,7 +4,7 @@ Minimal chat workspace with a wxPython desktop client and a Python HTTPS backend
 
 ## Layout
 
-- `client/` desktop app: `client.py` (wxPython, current) and `main.lua` (original wxLua version).
+- `client/` desktop app: `client.py` (wxPython, current) and `client.lua` (original wxLua version).
 - `backend/` HTTPS chat service.
 - `peer.py` symmetric full-mesh P2P chat node (server + client + tray in one);
   see [Peer (mesh)](#peer-mesh). The client/server pair above is kept as-is.
